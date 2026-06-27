@@ -43,38 +43,54 @@ class TicTacToe:
         else:
             return 0, False
 
+    def get_win_line(self, game_state, action):
+        row = action // self.cols
+        col = action % self.cols
+        player = game_state[row][col]
+
+        if np.sum(game_state[row, :]) == player * self.cols:
+            return ((row, 0), (row, self.cols - 1))
+        if np.sum(game_state[:, col]) == player * self.rows:
+            return ((0, col), (self.rows - 1, col))
+        if np.sum(np.diag(game_state)) == player * self.rows:
+            return ((0, 0), (self.rows - 1, self.cols - 1))
+        if np.sum(np.diag(np.fliplr(game_state))) == player * self.rows:
+            return ((0, self.cols - 1), (self.rows - 1, 0))
+        return None
+
     def get_opponent(self, player):
         return -player
 
 
 tictactoe = TicTacToe()
-player = 1
 
-game_state = tictactoe.get_initial_game_state()
+if __name__ == "__main__":
+    player = 1
+    game_state = tictactoe.get_initial_game_state()
 
-while True:
-    print(game_state)
-
-    valid_moves = tictactoe.get_actions(game_state)
-    print("valid_moves", valid_moves)
-
-    action = int(input(f" {player} enter your move: "))
-
-    if action not in valid_moves:
-        print("invalid")
-        continue
-
-    game_state = tictactoe.get_next_state(game_state, action, player)
-    result, done = tictactoe.get_result_and_termination(game_state, action)
-
-    if done:
+    while True:
         print(game_state)
 
-        if result == 0:
-            print("Draw")
-        elif result == 1:
-            print(f"Player {player} wins")
+        valid_moves = tictactoe.get_actions(game_state)
+        print("valid_moves", valid_moves)
 
-        break
+        action = int(input(f" {player} enter your move: "))
 
-    player = tictactoe.get_opponent(player)
+        if action not in valid_moves:
+            print("invalid")
+            continue
+
+        game_state = tictactoe.get_next_state(game_state, action, player)
+        result, done = tictactoe.get_result_and_termination(game_state, action)
+
+        if done:
+            print(game_state)
+
+            if result == 0:
+                print("Draw")
+            elif result == 1:
+                print(f"Player {player} wins")
+
+            break
+
+        player = tictactoe.get_opponent(player)
